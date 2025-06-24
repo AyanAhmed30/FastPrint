@@ -1,0 +1,5 @@
+| **Method** | **Endpoint**         | **Description**                  | **Auth Required** | **Body**                 |
+| ---------- | -------------------- | -------------------------------- | ----------------- | ------------------------ |
+| `POST`     | `/api/books/create/` | Create a new book                | ✅ Yes             | Book data (JSON + files) |
+| `GET`      | `/api/books/my/`     | List books of the logged-in user | ✅ Yes             | No                       |
+| `GET`      | `/api/books/<id>/`   | Get details of a specific book   | ✅ Yes             | No                       |

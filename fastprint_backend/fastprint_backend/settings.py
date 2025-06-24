@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'promos',
     'shipping',
     'rest_framework_simplejwt',
+    'pricing'
 
 ]
 REST_FRAMEWORK = {

@@ -1,0 +1,11 @@
+| Endpoint                              | Method | Auth Required | Description                             |
+| ------------------------------------- | ------ | ------------- | --------------------------------------- |
+| `/api/pricing/calculate/`             | `POST` | ❌ No          | Calculates estimated price for a book   |
+| `/api/pricing/binding-type/<id>/`     | `PUT`  | ✅ Admin Only  | Updates price or name of a binding type |
+| `/api/pricing/spine-type/<id>/`       | `PUT`  | ✅ Admin Only  | Updates price or name of a spine type   |
+| `/api/pricing/exterior-color/<id>/`   | `PUT`  | ✅ Admin Only  | Updates exterior color options          |
+| `/api/pricing/foil-stamping/<id>/`    | `PUT`  | ✅ Admin Only  | Updates foil stamping option            |
+| `/api/pricing/screen-stamping/<id>/`  | `PUT`  | ✅ Admin Only  | Updates screen stamping option          |
+| `/api/pricing/corner-protector/<id>/` | `PUT`  | ✅ Admin Only  | Updates corner protector options        |
+| `/api/pricing/interior-color/<id>/`   | `PUT`  | ✅ Admin Only  | Updates interior color per-page pricing |
+| `/api/pricing/paper-type/<id>/`       | `PUT`  | ✅ Admin Only  | Updates paper type per-page pricing     |
