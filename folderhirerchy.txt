@@ -35,3 +35,210 @@ fastprint_backend/
 ├── requirements.txt           # Add dependencies here
 └── .env                       # Will contain DB credentials
  
+
+ # management/commands/populate_pricing_data.py
+from django.core.management.base import BaseCommand
+from decimal import Decimal
+from pricing.models import (
+    PricingTemplate, BindingType, SpineType, ExteriorColor, FoilStamping,
+    ScreenStamping, CornerProtector, InteriorColor, PaperType, 
+    QuantityDiscount, TaxRate, ShippingRate
+)
+
+class Command(BaseCommand):
+    help = 'Populate pricing data from FastPrintGuys specifications'
+
+    def handle(self, *args, **options):
+        # Create pricing templates for different trim sizes
+        templates_data = [
+            {'name': 'A4 Template', 'trim_size': 'A4 (8.27 x 11.69 in / 210 x 297 mm)'},
+            {'name': 'US Letter Template', 'trim_size': 'US Letter (8.5 x 11 in / 216 x 279 mm)'},
+            {'name': 'Comic Book Template', 'trim_size': 'Comic Book (6.625 x 10.25 in / 168 x 260 mm)'},
+        ]
+
+        for template_data in templates_data:
+            template, created = PricingTemplate.objects.get_or_create(
+                trim_size=template_data['trim_size'],
+                defaults={'name': template_data['name']}
+            )
+            if created:
+                self.stdout.write(f'Created template: {template.name}')
+            
+            # Binding Types
+            binding_types = [
+                {'name': 'Leather Case Wrap', 'price': Decimal('79.00')},
+                {'name': 'Faux Leather Case Wrap', 'price': Decimal('69.00')},
+                {'name': 'Polythin Rexine Case Wrap', 'price': Decimal('59.00')},
+            ]
+            
+            for binding_data in binding_types:
+                BindingType.objects.get_or_create(
+                    pricing_template=template,
+                    name=binding_data['name'],
+                    defaults={'price': binding_data['price']}
+                )
+            
+            # Spine Types
+            spine_types = [
+                {'name': 'Round', 'price': Decimal('5.00')},
+                {'name': 'Flat', 'price': Decimal('0.00')},
+            ]
+            
+            for spine_data in spine_types:
+                SpineType.objects.get_or_create(
+                    pricing_template=template,
+                    name=spine_data['name'],
+                    defaults={'price': spine_data['price']}
+                )
+            
+            # Exterior Colors
+            exterior_colors = [
+                {'name': 'Black', 'price': Decimal('5.00')},
+                {'name': 'Brown', 'price': Decimal('3.00')},
+                {'name': 'Maroon', 'price': Decimal('5.00')},
+                {'name': 'Dark Blue', 'price': Decimal('5.00')},
+            ]
+            
+            for color_data in exterior_colors:
+                ExteriorColor.objects.get_or_create(
+                    pricing_template=template,
+                    name=color_data['name'],
+                    defaults={'price': color_data['price']}
+                )
+            
+            # Foil Stamping
+            foil_stampings = [
+                {'name': 'Golden', 'price': Decimal('10.00')},
+                {'name': 'Silver', 'price': Decimal('15.00')},
+            ]
+            
+            for foil_data in foil_stampings:
+                FoilStamping.objects.get_or_create(
+                    pricing_template=template,
+                    name=foil_data['name'],
+                    defaults={'price': foil_data['price']}
+                )
+            
+            # Screen Stamping
+            screen_stampings = [
+                {'name': 'Golden', 'price': Decimal('10.00')},
+                {'name': 'Silver', 'price': Decimal('15.00')},
+            ]
+            
+            for screen_data in screen_stampings:
+                ScreenStamping.objects.get_or_create(
+                    pricing_template=template,
+                    name=screen_data['name'],
+                    defaults={'price': screen_data['price']}
+                )
+            
+            # Corner Protectors
+            corner_protectors = [
+                {
+                    'name': 'Gold Sharp Corner',
+                    'price': Decimal('4.00'),
+                    'reference_url': 'https://www.amazon.com/Concise-Corner-Protector-Simple-Guarder/dp/B07RK9KNF2'
+                },
+                {
+                    'name': 'Gold Round Corner',
+                    'price': Decimal('4.00'),
+                    'reference_url': 'https://www.amazon.com/Scrapbooking-Mounting-Corners-Notebook-Protectors/dp/B07MC49Z25'
+                },
+                {
+                    'name': 'Vintage Designs Corner',
+                    'price': Decimal('6.00'),
+                    'reference_url': 'https://www.amazon.com/Protector-Triangle-Decorative-Vintage-Scrapbooking/dp/B09X1LXBR2'
+                },
+            ]
+            
+            for corner_data in corner_protectors:
+                CornerProtector.objects.get_or_create(
+                    pricing_template=template,
+                    name=corner_data['name'],
+                    defaults={
+                        'price': corner_data['price'],
+                        'reference_url': corner_data['reference_url']
+                    }
+                )
+            
+            # Interior Colors
+            interior_colors = [
+                {'name': 'Premium Black & white', 'price_per_page': Decimal('0.03')},
+                {'name': 'Premium Color', 'price_per_page': Decimal('0.19')},
+            ]
+            
+            for interior_data in interior_colors:
+                InteriorColor.objects.get_or_create(
+                    pricing_template=template,
+                    name=interior_data['name'],
+                    defaults={'price_per_page': interior_data['price_per_page']}
+                )
+            
+            # Paper Types
+            paper_types = [
+                {'name': '70# White-Uncoated', 'price_per_page': Decimal('0.02')},
+                {'name': '60# Cream-Uncoated', 'price_per_page': Decimal('0.01')},
+                {'name': '60# White-uncoated', 'price_per_page': Decimal('0.01')},
+                {'name': '80# White-Coated', 'price_per_page': Decimal('0.03')},
+            ]
+            
+            for paper_data in paper_types:
+                PaperType.objects.get_or_create(
+                    pricing_template=template,
+                    name=paper_data['name'],
+                    defaults={'price_per_page': paper_data['price_per_page']}
+                )
+            
+            # Quantity Discounts
+            quantity_discounts = [
+                {'min_quantity': 100, 'discount_percentage': Decimal('5.00')},
+                {'min_quantity': 250, 'discount_percentage': Decimal('10.00')},
+                {'min_quantity': 500, 'discount_percentage': Decimal('15.00')},
+                {'min_quantity': 1000, 'discount_percentage': Decimal('20.00')},
+            ]
+            
+            for discount_data in quantity_discounts:
+                QuantityDiscount.objects.get_or_create(
+                    pricing_template=template,
+                    min_quantity=discount_data['min_quantity'],
+                    defaults={'discount_percentage': discount_data['discount_percentage']}
+                )
+        
+        # Create sample tax rates
+        tax_rates = [
+            {'country': 'USA', 'state': 'CA', 'tax_rate': Decimal('0.0825')},
+            {'country': 'USA', 'state': 'NY', 'tax_rate': Decimal('0.08')},
+            {'country': 'USA', 'state': 'TX', 'tax_rate': Decimal('0.0625')},
+            {'country': 'USA', 'state': '', 'tax_rate': Decimal('0.05')},  # Default US rate
+            {'country': 'Canada', 'state': '', 'tax_rate': Decimal('0.13')},
+            {'country': 'UK', 'state': '', 'tax_rate': Decimal('0.20')},
+        ]
+        
+        for tax_data in tax_rates:
+            TaxRate.objects.get_or_create(
+                country=tax_data['country'],
+                state=tax_data['state'],
+                defaults={'tax_rate': tax_data['tax_rate']}
+            )
+        
+        # Create sample shipping rates
+        shipping_rates = [
+            {'region': 'USA', 'courier': 'FedEx', 'rate_per_kg': Decimal('15.00'), 'flat_rate': Decimal('10.00')},
+            {'region': 'Canada', 'courier': 'UPS', 'rate_per_kg': Decimal('20.00'), 'flat_rate': Decimal('15.00')},
+            {'region': 'UK', 'courier': 'DHL', 'rate_per_kg': Decimal('25.00'), 'flat_rate': Decimal('20.00')},
+            {'region': 'International', 'courier': 'FedEx', 'rate_per_kg': Decimal('35.00'), 'flat_rate': Decimal('30.00')},
+        ]
+        
+        for shipping_data in shipping_rates:
+            ShippingRate.objects.get_or_create(
+                region=shipping_data['region'],
+                courier=shipping_data['courier'],
+                defaults={
+                    'rate_per_kg': shipping_data['rate_per_kg'],
+                    'flat_rate': shipping_data['flat_rate']
+                }
+            )
+        
+        self.stdout.write(
+            self.style.SUCCESS('Successfully populated pricing data!')
+        )

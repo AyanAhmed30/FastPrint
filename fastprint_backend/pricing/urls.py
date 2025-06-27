@@ -1,8 +1,7 @@
-# pricing/urls.py
 from django.urls import path
-from . import views
+from .views import DropdownOptionsView, PricingCalculationView
 
 urlpatterns = [
-    path('calculate/', views.get_price_estimate, name='get-price-estimate'),     # Public price calculator
-    path('binding-type/<int:pk>/', views.update_binding_type, name='update-binding-type'),  # Admin only
+    path('options/', DropdownOptionsView.as_view(), name='pricing-options'),
+    path('calculate/', PricingCalculationView.as_view(), name='pricing-calculate'),
 ]
