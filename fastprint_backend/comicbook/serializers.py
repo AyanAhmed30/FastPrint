@@ -11,8 +11,14 @@ from .models import (
 class ComicTrimSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComicTrimSize
-        fields = '__all__'
+        fields = ['id', 'name']
 
+class ComicBindingTypeSerializer(serializers.ModelSerializer):
+    trim_size = ComicTrimSizeSerializer(read_only=True)
+
+    class Meta:
+        model = ComicBindingType
+        fields = ['id', 'name', 'price', 'min_pages', 'max_pages', 'trim_size']
 
 class ComicInteriorColorSerializer(serializers.ModelSerializer):
     class Meta:

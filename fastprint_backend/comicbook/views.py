@@ -8,6 +8,7 @@ from .utils import get_allowed_binding_names
 from decimal import Decimal
 
 
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_comic_dropdowns(request):
@@ -69,4 +70,60 @@ def calculate_comic_cost(request):
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['PUT'])
+def update_comic_binding_type(request, pk):
+    try:
+        obj = ComicBindingType.objects.get(pk=pk)
+    except ComicBindingType.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+    
+    serializer = ComicBindingTypeSerializer(obj, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
+@api_view(['PUT'])
+def update_comic_interior_color(request, pk):
+    try:
+        obj = ComicInteriorColor.objects.get(pk=pk)
+    except ComicInteriorColor.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    serializer = ComicInteriorColorSerializer(obj, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
+@api_view(['PUT'])
+def update_comic_paper_type(request, pk):
+    try:
+        obj = ComicPaperType.objects.get(pk=pk)
+    except ComicPaperType.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    serializer = ComicPaperTypeSerializer(obj, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
+@api_view(['PUT'])
+def update_comic_cover_finish(request, pk):
+    try:
+        obj = ComicCoverFinish.objects.get(pk=pk)
+    except ComicCoverFinish.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    serializer = ComicCoverFinishSerializer(obj, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_all_comic_bindings(request):
+    bindings = ComicBindingType.objects.all()
+    return Response(ComicBindingTypeSerializer(bindings, many=True).data)
 

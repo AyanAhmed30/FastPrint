@@ -41,14 +41,19 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',  # CORS support for frontend
     'users',
-    'books',
+   
     'orders',
+    'book',
     'promos',
     'shipping',
     'rest_framework_simplejwt',
     'pricing',
     'printbookcalculator',
-    'comicbook'
+    'comicbook',
+    'photobook',
+    'magazine',
+    'yearbook',
+    'calender',
     
 ]
 
@@ -95,11 +100,13 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only in development
 # CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'fastprint_backend.urls'
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # ✅ Your custom templates directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -177,5 +184,14 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ayan3092003@gmail.com'
-# EMAIL_HOST_PASSWORD = 'uqcy qpda lxyr zycw'  # <-- your app password
+# EMAIL_HOST_PASSWORD = 'uqcy qpda lxyr zycw' 
 DEFAULT_FROM_EMAIL = 'FastPrintGuys <ayan3092003@gmail.com>'
+
+
+# Base directory of your project (usually already defined)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Media files (uploads)
+MEDIA_URL = '/media/'  # URL prefix for media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Absolute path to media folder
+
