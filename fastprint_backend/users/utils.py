@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 def send_verification_email(user, uidb64, token):
-    verification_link = f"http://localhost:5173/verify-email/{uidb64}/{token}/"  # Frontend URL
+    verification_link = f"http://3.81.150.194/verify-email/{uidb64}/{token}/"  # Frontend URL
     subject = "Email Verification - FastPrintGuys"
     from_email = settings.DEFAULT_FROM_EMAIL
     to = [user.email]
