@@ -33,9 +33,9 @@ print_step() {
     echo -e "${BLUE}[STEP]${NC} $1"
 }
 
-# Configuration
+# Configuration - Updated to match your actual folder structure
 BACKEND_DIR="$HOME/FastPrint"
-FRONTEND_DIR="$HOME/FastPrint-Frontend"
+FRONTEND_DIR="$HOME/frontend/FastPrint-Frontend/fastprint-frontend/fastprint-frontend"
 NGINX_CONFIG_DIR="/etc/nginx/sites-available"
 DOMAIN="app.fastprintguys.com"
 
@@ -174,7 +174,14 @@ deploy_backend() {
 deploy_frontend() {
     print_step "Deploying Frontend..."
     
-    cd "$FRONTEND_DIR/fastprint-frontend"
+    # Check if frontend directory exists
+    if [ ! -d "$FRONTEND_DIR" ]; then
+        print_error "Frontend directory not found at: $FRONTEND_DIR"
+        print_error "Please check your folder structure and update the FRONTEND_DIR variable"
+        return 1
+    fi
+    
+    cd "$FRONTEND_DIR"
     
     # Pull latest changes
     print_status "Pulling latest frontend changes..."
