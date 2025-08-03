@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: fastprint_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-fastprint_db}
+      MYSQL_USER: ${DB_USER:-fastprint_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-fastprint_password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - fastprint_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastprint_backend
+    restart: unless-stopped
+    environment:
+      - DEBUG=${DEBUG:-False}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DB_NAME=${DB_NAME:-fastprint_db}
+      - DB_USER=${DB_USER:-fastprint_user}
+      - DB_PASSWORD=${DB_PASSWORD:-fastprint_password}
+      - DB_HOST=db
+      - DB_PORT=3306
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+      - ./fastprint_backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - fastprint_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/admin/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume:
+
+networks:
+  fastprint_network:
+    driver: bridge

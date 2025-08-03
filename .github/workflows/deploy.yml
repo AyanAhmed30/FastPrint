@@ -21,11 +21,49 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: 🚀 Deploy to EC2 and Restart Docker
+      - name: 🚀 Deploy Backend with Unified Script
         run: |
           ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            cd ~/FastPrint  # path on EC2 where backend repo is cloned
+            cd ~/FastPrint
+            
+            # Pull latest changes including the unified deployment script
             git pull origin main
-            docker-compose down
-            docker-compose up -d --build
+            
+            # Make sure the deployment script is executable
+            chmod +x deploy-unified.sh
+            
+            # Run unified deployment for backend only
+            ./deploy-unified.sh --backend-only
+          EOF
+
+      - name: ✅ Validate Backend Deployment
+        run: |
+          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            # Wait a moment for services to stabilize
+            sleep 10
+            
+            # Check if backend container is running
+            if ! docker-compose -f ~/FastPrint/docker-compose.yml ps | grep -q "backend.*Up"; then
+              echo "❌ Backend container is not running"
+              docker-compose -f ~/FastPrint/docker-compose.yml logs backend
+              exit 1
+            fi
+            
+            # Check if backend is responding
+            if ! curl -f http://localhost:8000/admin/ > /dev/null 2>&1; then
+              echo "❌ Backend is not responding on port 8000"
+              docker-compose -f ~/FastPrint/docker-compose.yml logs backend
+              exit 1
+            fi
+            
+            # Check if backend is accessible through Nginx (if SSL is configured)
+            if curl -f https://app.fastprintguys.com/api/admin/ > /dev/null 2>&1; then
+              echo "✅ Backend is accessible through Nginx with HTTPS"
+            elif curl -f http://app.fastprintguys.com/api/admin/ > /dev/null 2>&1; then
+              echo "✅ Backend is accessible through Nginx with HTTP"
+            else
+              echo "⚠️ Backend may not be accessible through Nginx - check configuration"
+            fi
+            
+            echo "✅ Backend deployment validation completed"
           EOF
