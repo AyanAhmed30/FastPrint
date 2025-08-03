@@ -187,6 +187,10 @@ deploy_frontend() {
     print_status "Pulling latest frontend changes..."
     git pull origin main
     
+    # Navigate to the actual frontend app directory
+    cd fastprint-frontend
+    print_status "Current directory: $(pwd)"
+    
     # Stop existing frontend container
     print_status "Stopping existing frontend container..."
     docker stop fastprint-frontend 2>/dev/null || true

@@ -24,15 +24,31 @@ jobs:
       - name: 🚀 Deploy Backend with Unified Script
         run: |
           ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            cd ~/FastPrint
+            set -e  # Exit on any error
+            
+            echo "🚀 Starting Backend Deployment..."
+            
+            # Check if backend directory exists
+            BACKEND_DIR="$HOME/FastPrint"
+            if [ ! -d "$BACKEND_DIR" ]; then
+              echo "❌ Backend directory not found at $BACKEND_DIR"
+              echo "📁 Available directories in home:"
+              ls -la $HOME/
+              exit 1
+            fi
+            
+            cd "$BACKEND_DIR"
+            echo "📍 Current directory: $(pwd)"
             
             # Pull latest changes including the unified deployment script
+            echo "📥 Pulling latest changes..."
             git pull origin main
             
             # Make sure the deployment script is executable
             chmod +x deploy-unified.sh
             
             # Run unified deployment for backend only
+            echo "🔧 Running unified deployment script..."
             ./deploy-unified.sh --backend-only
           EOF
 
