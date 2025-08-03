@@ -174,11 +174,22 @@ deploy_backend() {
 deploy_frontend() {
     print_step "Deploying Frontend..."
     
-    cd "$FRONTEND_DIR/fastprint-frontend"
+    # Check if frontend directory exists
+    if [ ! -d "$FRONTEND_DIR" ]; then
+        print_error "Frontend directory not found at: $FRONTEND_DIR"
+        print_error "Please check your folder structure and update the FRONTEND_DIR variable"
+        return 1
+    fi
+    
+    cd "$FRONTEND_DIR"
     
     # Pull latest changes
     print_status "Pulling latest frontend changes..."
     git pull origin main
+    
+    # Navigate to the actual frontend app directory
+    cd fastprint-frontend
+    print_status "Current directory: $(pwd)"
     
     # Stop existing frontend container
     print_status "Stopping existing frontend container..."
