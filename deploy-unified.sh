@@ -35,7 +35,7 @@ print_step() {
 
 # Configuration - Updated to match your actual folder structure
 BACKEND_DIR="$HOME/FastPrint"
-FRONTEND_DIR="$HOME/frontend/FastPrint-Frontend/fastprint-frontend/fastprint-frontend"
+FRONTEND_DIR="$HOME/frontend"
 NGINX_CONFIG_DIR="/etc/nginx/sites-available"
 DOMAIN="app.fastprintguys.com"
 
@@ -182,10 +182,27 @@ deploy_frontend() {
     fi
     
     cd "$FRONTEND_DIR"
+    print_status "Current directory: $(pwd)"
+    print_status "Contents of frontend directory:"
+    ls -la
+    
+    # Check if we need to navigate further into the directory structure
+    if [ -d "FastPrint-Frontend" ]; then
+        cd FastPrint-Frontend
+        print_status "Navigated to: $(pwd)"
+    fi
     
     # Pull latest changes
     print_status "Pulling latest frontend changes..."
     git pull origin main
+    
+    # Navigate to the actual frontend app directory if it exists
+    if [ -d "fastprint-frontend" ]; then
+        cd fastprint-frontend
+        print_status "Frontend app directory: $(pwd)"
+    else
+        print_status "Using current directory as frontend app: $(pwd)"
+    fi
     
     # Stop existing frontend container
     print_status "Stopping existing frontend container..."
